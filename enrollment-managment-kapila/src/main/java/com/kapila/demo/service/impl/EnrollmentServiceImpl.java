@@ -18,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.kapila.demo.async.ClassServiceCallable;
 import com.kapila.demo.async.StudentServiceCallable;
@@ -51,7 +52,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
 	@Autowired
 	private ClassServiceClient classServiceClient;
-
+	
 	@Override
 	public List<EnrollmentVo> getAllEnrollmentList() {
 
@@ -118,6 +119,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 		ResponseEntity<StudentVo> student = getStudent(vo.getStudentId());
 		log.info("response from student service:" + student);
 
+		
 		Enrollment enrollment = new Enrollment(id, vo.getClassId(), vo.getStudentId(), LocalDateTime.now());
 		enrollment = repo.save(enrollment);
 		log.info("reponse entity:" + vo);
@@ -201,5 +203,19 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 			throw new ServiceNotAvaiableException("class service not available, try again later ");
 		}
 	}
+	
+	/*
+	 * private ResponseEntity<StudentVo> getStudentResttemplate(String id) { try {
+	 * log.info("calling student service");
+	 * restTemplate.getForObject("http://SCHOOL-STUDENT-SERVICE/api/v1/students/"+
+	 * id, String.class); return studentServiceClient.getStudent(id);
+	 * 
+	 * } catch (NotFound e) { throw new StudentNotFoundException(id +
+	 * " - student not found"); } catch (Exception ee) { throw new
+	 * ServiceNotAvaiableException("student service not available, try again later"
+	 * ); } }
+	 */
+
+	
 
 }
