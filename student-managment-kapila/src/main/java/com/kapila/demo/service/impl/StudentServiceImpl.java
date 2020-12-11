@@ -16,9 +16,13 @@ import com.kapila.demo.vo.StudentVo;
 
 @Service
 public class StudentServiceImpl implements StudentService {
-
-	@Autowired
+	
 	private StudentRepository repo;
+	
+	@Autowired
+	public void setRepo(StudentRepository repo) {
+		this.repo = repo;
+	}
 
 	@Override
 	public List<StudentVo> getAllStudentList() {
@@ -29,7 +33,7 @@ public class StudentServiceImpl implements StudentService {
 	}
 
 	@Override
-	public StudentVo findStudentById(String id) {
+	public StudentVo findStudentById(String id) throws StudentNotFoundException {
 		
 		return ifStudentNotExistThrowExceptoinElseReturn(id).map(s -> {
 			return new StudentVo(s.getId(), s.getStudentName(), s.getAge());
