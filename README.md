@@ -1,4 +1,5 @@
 # spring-cloud-miroservices
+spring cloud miroservices :
 config server + eureka server + zuul api gateway + zipkin + slueth + feign client
 
 
@@ -16,11 +17,11 @@ Its required to design and develop  Spring Boot based Spring Cloud API. Its reco
 
 As per the requirement its need to design and implement school student registration system , Main Entity are Student and Class . one student can be assigning to many classes while registration. Below operations should be able to operate via external REST Client.  
 
-### CRUD operations for all Student and Classes 
+* #### CRUD operations for all Student and Classes 
 
-### Assign Student to Classes by API operation. 
+* #### Assign Student to Classes by API operation. 
 
-### Query all Student records and  Classes by API operation by REST Client. 
+* #### Query all Student records and  Classes by API operation by REST Client. 
 
 #### Student Entity  - studentId ,studentName,age 
 
