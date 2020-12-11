@@ -20,6 +20,8 @@ import com.kapila.demo.repository.StudentRepository;
 
 //@RunWith(EasyMockRunner.class)
 public class StudentServiceImplTest {
+	
+	
 	/*
 	 * 
 	 * @Mock private StudentRepository studentRepository;

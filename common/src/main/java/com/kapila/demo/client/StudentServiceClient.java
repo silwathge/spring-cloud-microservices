@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.kapila.demo.client.fallback.StudentServiceClientFallback;
 import com.kapila.demo.vo.StudentVo;
 
-@FeignClient(name = "${client.student.service.app.name}",fallback = StudentServiceClientFallback.class)
+@FeignClient(name = "http://${client.student.service.app.name}",fallback = StudentServiceClientFallback.class)
 @RequestMapping("/api/v1")
 public interface StudentServiceClient {
 	
