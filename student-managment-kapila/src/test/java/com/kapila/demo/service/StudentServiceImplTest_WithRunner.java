@@ -1,18 +1,23 @@
 package com.kapila.demo.service;
 
+import static org.easymock.EasyMock.expect;
+import static org.easymock.EasyMock.replay;
+import static org.easymock.EasyMock.reset;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import org.easymock.EasyMock;
+import org.easymock.EasyMockRunner;
+import org.easymock.Mock;
+import org.easymock.TestSubject;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import com.kapila.demo.entity.Student;
 import com.kapila.demo.exception.StudentNotFoundException;
@@ -20,26 +25,24 @@ import com.kapila.demo.repository.StudentRepository;
 import com.kapila.demo.service.impl.StudentServiceImpl;
 import com.kapila.demo.vo.StudentVo;
 
-//@RunWith(EasyMockRunner.class)
-public class StudentServiceImplTest {
-
-	private StudentServiceImpl service;
+@RunWith(EasyMockRunner.class)
+public class StudentServiceImplTest_WithRunner {
+	
+	@TestSubject
+	private StudentServiceImpl service = new StudentServiceImpl();
+	@Mock
 	private StudentRepository repoMock;
 
 	@Before
-	public void setUp() throws Exception {
-		
-		repoMock = EasyMock.createMock(StudentRepository.class);
+	public void setUp() throws Exception {		
 
-		EasyMock.expect(repoMock.findById("S0001")).andReturn(Optional.of(new Student("S0001", "", "")));
-		EasyMock.expect(repoMock.findById("S0002")).andReturn(Optional.<Student>empty());
-		List<Student> students = Arrays.asList(new Student[] { new Student(), new Student() });
-		EasyMock.expect(repoMock.findAll()).andReturn(students);
+		expect(repoMock.findById("S0001")).andReturn(Optional.of(new Student("S0001", "", "")));
+		expect(repoMock.findById("S0002")).andReturn(Optional.<Student>empty());
+		List<Student> students = Arrays.asList(new Student[] { new Student(), new Student() });		
+		expect(repoMock.findAll()).andReturn(students);
 
-		EasyMock.replay(repoMock);
+		replay(repoMock);
 
-		service = new StudentServiceImpl();
-		service.setRepo(repoMock);
 	}
 
 	@Test
@@ -74,15 +77,12 @@ public class StudentServiceImplTest {
 
 	@Test
 	public void testGetAllStudentList_returnEmptyList() {
-
-		StudentRepository repoMock = EasyMock.createMock(StudentRepository.class);
-		List students = Arrays.asList(new Student[] {});
-		EasyMock.expect(repoMock.findAll()).andReturn(students);
-		EasyMock.replay(repoMock);
-		StudentServiceImpl service = new StudentServiceImpl();
-		service.setRepo(repoMock);
+		reset(repoMock);
+		List<Student> studentsEmpty = Arrays.asList(new Student[] {});
+		expect(repoMock.findAll()).andReturn(studentsEmpty);
+		replay(repoMock);
 		List<StudentVo> returnedStudentList = service.getAllStudentList();
-		assertTrue(returnedStudentList.isEmpty());
+		assertEquals(0, returnedStudentList.size());		
 
 	}
 
