@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.kapila.demo.service.StudentService;
-import com.kapila.demo.vo.ClassVo;
 import com.kapila.demo.vo.StudentVo;
 
 @RestController

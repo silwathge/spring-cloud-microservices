@@ -1,15 +1,10 @@
 package com.kapila.demo.service.impl;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -18,13 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
-import com.kapila.demo.async.ClassServiceCallable;
-import com.kapila.demo.async.StudentServiceCallable;
 import com.kapila.demo.client.ClassServiceClient;
 import com.kapila.demo.client.StudentServiceClient;
-import com.kapila.demo.controller.EnrollmentRestController;
 import com.kapila.demo.entity.Enrollment;
 import com.kapila.demo.exception.ClassNotFoundException;
 import com.kapila.demo.exception.EnrollmentAlreadyExistException;
@@ -105,20 +96,35 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 //		getClassAsync(vo.getClassId());
 //		getStudentAsync(vo.getClassId());
 
+		
+ 		 
+		/*
+		 * ResponseEntity<ClassVo> clas = getClass(vo.getClassId());
+		 * log.info("response from class service:" + clas);
+		 * 
+		 * ResponseEntity<StudentVo> student = getStudent(vo.getStudentId());
+		 * log.info("response from student service:" + student);
+		 */
+
 		log.info("request:" + vo);
 		String id = vo.getClassId() + "-" + vo.getStudentId();
 
 		if (repo.findById(id).isPresent()) {
 			log.info(id + " - enrollment already exist");
 			throw new EnrollmentAlreadyExistException(id + " - enrollment already exist");
+		}		
+
+		CompletableFuture<ResponseEntity<ClassVo>> classAsync = getClassAsync(vo.getClassId());
+ 		CompletableFuture<ResponseEntity<StudentVo>> studentAsync = getStudentAsync(vo.getStudentId());
+ 		
+ 		CompletableFuture.allOf(classAsync, studentAsync).join();
+		 try {
+			classAsync.get();
+			studentAsync.get();
+		 } catch (InterruptedException | ExecutionException e) {			
+			 log.error("error in calling calss service and/or student service",e);
+			 throw new ServiceNotAvaiableException("error in calling student and/or class service , try again later");
 		}
-
-		ResponseEntity<ClassVo> clas = getClass(vo.getClassId());
-		log.info("response from class service:" + clas);
-
-		ResponseEntity<StudentVo> student = getStudent(vo.getStudentId());
-		log.info("response from student service:" + student);
-
 		
 		Enrollment enrollment = new Enrollment(id, vo.getClassId(), vo.getStudentId(), LocalDateTime.now());
 		enrollment = repo.save(enrollment);
@@ -178,8 +184,8 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 		}
 	}
 
-	@Async
-	private CompletableFuture<ResponseEntity<ClassVo>> getClassAsync(String id) {
+	@Async("classServiceExecutor")
+	public CompletableFuture<ResponseEntity<ClassVo>> getClassAsync(String id) {
 		try {
 			ResponseEntity<ClassVo> clas = classServiceClient.getClass(id);
 
@@ -191,16 +197,16 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 		}
 	}
 
-	@Async
-	private CompletableFuture<ResponseEntity<StudentVo>> getStudentAsync(String id) {
+	@Async("classServiceExecutor")
+	public CompletableFuture<ResponseEntity<StudentVo>> getStudentAsync(String id) {
 		try {
 			ResponseEntity<StudentVo> student = studentServiceClient.getStudent(id);
 
 			return CompletableFuture.completedFuture(student);
 		} catch (NotFound e) {
-			throw new ClassNotFoundException(id + " - class not found");
+			throw new ClassNotFoundException(id + " - student not found");
 		} catch (Exception ee) {
-			throw new ServiceNotAvaiableException("class service not available, try again later ");
+			throw new ServiceNotAvaiableException("student service not available, try again later ");
 		}
 	}
 	
