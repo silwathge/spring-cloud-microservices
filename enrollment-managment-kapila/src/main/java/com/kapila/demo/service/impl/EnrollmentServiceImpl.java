@@ -68,20 +68,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 		if (repo.findById(id).isPresent()) {
 			log.info(id + " - enrollment already exist");
 			throw new EnrollmentAlreadyExistException(id + " - enrollment already exist");
-		}
-		// this.getStudent(vo.getStudentId());
-		// this.getClass(vo.getClassId());
-
-// 		CompletableFuture<ResponseEntity<StudentVo>> studentAsync = getStudentAsync(vo.getStudentId());
-// 		CompletableFuture<ResponseEntity<ClassVo>> classAsync = getClassAsync(vo.getClassId());
-// 		CompletableFuture.allOf(classAsync, studentAsync).join();
-//		 try {
-//			classAsync.get();
-//			studentAsync.get();
-//		 } catch (InterruptedException | ExecutionException e) {			
-//			 log.error("error in calling calss service and/or student service",e);
-//			 throw new ServiceNotAvaiableException("error in calling student and/or class service , try again later");
-//		}
+		}		
 
 		Enrollment enrollment = new Enrollment(id, vo.getClassId(), vo.getStudentId(), LocalDateTime.now());
 		enrollment = repo.save(enrollment);

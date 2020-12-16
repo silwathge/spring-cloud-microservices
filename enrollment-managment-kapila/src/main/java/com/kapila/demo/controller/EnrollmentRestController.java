@@ -56,27 +56,14 @@ public class EnrollmentRestController {
 	}
 
 	@PostMapping("/enrollments")
-	public ResponseEntity<Object> saveEnrollment(@Valid @RequestBody EnrollmentVo enrollmentVo) {
+	public ResponseEntity<Object> saveEnrollment(@Valid @RequestBody EnrollmentVo enrollmentVo) throws InterruptedException {
 		log.info("request {}", enrollmentVo);
-		;
-
-		/*
-		 * try { studentAsync = service.getStudentAsync(enrollmentVo.getStudentId());
-		 * 
-		 * } catch (NotFound e) { throw new
-		 * StudentNotFoundException(enrollmentVo.getStudentId() +
-		 * " - student not found"); } catch (Exception ee) {
-		 * log.error(ee.getMessage(),ee); throw new
-		 * ServiceNotAvaiableException("student service not available, try again later "
-		 * ); }
-		 */
+		
 		CompletableFuture<ResponseEntity<ClassVo>> classAsync = service.getClassAsync(enrollmentVo.getClassId());
-		CompletableFuture<ResponseEntity<StudentVo>> studentAsync = service
-				.getStudentAsync(enrollmentVo.getStudentId());
-		ResponseEntity<StudentVo> studentResponse = null;
-		ResponseEntity<ClassVo> classResponse = null;
+		CompletableFuture<ResponseEntity<StudentVo>> studentAsync = service.getStudentAsync(enrollmentVo.getStudentId());
+		
 		try {
-			studentResponse = studentAsync.get();
+			 studentAsync.get();
 
 		} catch (ExecutionException e) {
 
@@ -86,13 +73,10 @@ public class EnrollmentRestController {
 			}
 			throw new ServiceNotAvaiableException("student service not available, try again later ");
 
-		} catch (Throwable e) {
-			log.error("error in calling student service", e);
-			throw new ServiceNotAvaiableException("error in calling student service , try again later");
-		}
+		} 
 
 		try {
-			classResponse = classAsync.get();
+			classAsync.get();
 
 		} catch (ExecutionException e) {
 			Throwable cause = e.getCause();
@@ -101,9 +85,6 @@ public class EnrollmentRestController {
 			}
 			throw new ServiceNotAvaiableException("class service not available, try again later ");
 
-		} catch (Throwable e) {
-			log.error("error in calling calss service ", e);
-			throw new ServiceNotAvaiableException("error in calling class service , try again later");
 		}
 
 		String id = service.saveEnrollment(enrollmentVo);
