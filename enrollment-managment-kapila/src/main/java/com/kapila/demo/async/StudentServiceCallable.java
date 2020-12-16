@@ -2,13 +2,9 @@ package com.kapila.demo.async;
 
 import java.util.concurrent.Callable;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Component;
 
-import com.kapila.demo.client.ClassServiceClient;
 import com.kapila.demo.client.StudentServiceClient;
-import com.kapila.demo.vo.ClassVo;
 import com.kapila.demo.vo.StudentVo;
 
 

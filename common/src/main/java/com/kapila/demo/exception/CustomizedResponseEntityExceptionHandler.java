@@ -47,6 +47,22 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
 				request.getDescription(false));
 		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
 	}
+	
+	@ExceptionHandler(ClassNotFoundException.class)
+	public final ResponseEntity<ExceptionResponse> handleClassNotFoundException(ClassNotFoundException ex,
+			WebRequest request) {
+		ExceptionResponse errorResponse = new ExceptionResponse(new Date(), ex.getMessage(),
+				request.getDescription(false));
+		return new ResponseEntity<>(errorResponse, HttpStatus.NOT_FOUND);
+	}
+
+	@ExceptionHandler(ClassAlreadyExistException.class)
+	public final ResponseEntity<ExceptionResponse> handleClassAlreadyExistException(ClassAlreadyExistException ex,
+			WebRequest request) {
+		ExceptionResponse errorResponse = new ExceptionResponse(new Date(), ex.getMessage(),
+				request.getDescription(false));
+		return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+	}
 
 	@ExceptionHandler(EnrollmentAlreadyExistException.class)
 	public final ResponseEntity<ExceptionResponse> handleEnrollmentAlreadyExistException(EnrollmentAlreadyExistException ex,

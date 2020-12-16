@@ -42,7 +42,7 @@ public class StudentRestController {
 			vo = service.findStudentById(id);
 			response =new  ResponseEntity<StudentVo>(vo,HttpStatus.OK);
 		} catch (com.kapila.demo.exception.StudentNotFoundException e) {
-			response =new  ResponseEntity<StudentVo>(vo,HttpStatus.NOT_FOUND);
+			throw e;
 		}
 		log.info("response {}",response);
 		return response;

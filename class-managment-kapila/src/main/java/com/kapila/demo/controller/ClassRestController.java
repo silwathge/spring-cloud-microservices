@@ -41,8 +41,8 @@ public class ClassRestController {
 		try {
 			vo = service.findClassById(id);
 			response =new  ResponseEntity<ClassVo>(vo,HttpStatus.OK);
-		} catch (com.kapila.demo.exception.ClassNotFoundException e) {
-			response =new  ResponseEntity<ClassVo>(vo,HttpStatus.NOT_FOUND);
+		} catch (com.kapila.demo.exception.ClassNotFoundException e) {			
+			throw e;
 		}
 		log.info("response {}",response);
 		return response;

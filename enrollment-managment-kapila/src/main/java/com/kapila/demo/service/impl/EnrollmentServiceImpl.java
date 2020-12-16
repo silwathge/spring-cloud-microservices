@@ -63,49 +63,6 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 	@Override
 	public String saveEnrollment(EnrollmentVo vo) {
 
-//		ExecutorService executor = Executors.newCachedThreadPool();
-//		ClassServiceCallable classServiceCallable = new ClassServiceCallable(classServiceClient, vo.getClassId());
-//		Future<ResponseEntity<ClassVo>> futureClass = executor.submit(classServiceCallable);
-//
-//		StudentServiceCallable studentServiceCallable = new StudentServiceCallable(studentServiceClient,
-//				vo.getStudentId());
-//		Future<ResponseEntity<StudentVo>> futureStudent = executor.submit(studentServiceCallable);
-//		
-//		try {
-//			log.info("calling student service");
-//			futureStudent.get();
-//		} catch (ExecutionException e) {
-//			log.info("not found returned from student service");
-//			throw new ClassNotFoundException(vo.getStudentId() + " - student not found !!!!!");
-//		} catch (Exception ee) {
-//			log.error("error in calling student service", ee);
-//			throw new ServiceNotAvaiableException("class service not available, try again later ");
-//		}
-//
-//		try {
-//			log.info("calling class service");
-//			futureClass.get();
-//		} catch (ExecutionException e) {
-//			log.info("not found returned from class service");
-//			throw new ClassNotFoundException(vo.getClassId() + " - class not found !!!!!");
-//		} catch (Exception ee) {
-//			log.error("error in calling class service", ee);
-//			throw new ServiceNotAvaiableException("class service not available, try again later ");
-//		}
-
-//		getClassAsync(vo.getClassId());
-//		getStudentAsync(vo.getClassId());
-
-		
- 		 
-		/*
-		 * ResponseEntity<ClassVo> clas = getClass(vo.getClassId());
-		 * log.info("response from class service:" + clas);
-		 * 
-		 * ResponseEntity<StudentVo> student = getStudent(vo.getStudentId());
-		 * log.info("response from student service:" + student);
-		 */
-
 		log.info("request:" + vo);
 		String id = vo.getClassId() + "-" + vo.getStudentId();
 
@@ -113,18 +70,19 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 			log.info(id + " - enrollment already exist");
 			throw new EnrollmentAlreadyExistException(id + " - enrollment already exist");
 		}		
-
-		CompletableFuture<ResponseEntity<ClassVo>> classAsync = getClassAsync(vo.getClassId());
- 		CompletableFuture<ResponseEntity<StudentVo>> studentAsync = getStudentAsync(vo.getStudentId());
- 		
- 		CompletableFuture.allOf(classAsync, studentAsync).join();
-		 try {
-			classAsync.get();
-			studentAsync.get();
-		 } catch (InterruptedException | ExecutionException e) {			
-			 log.error("error in calling calss service and/or student service",e);
-			 throw new ServiceNotAvaiableException("error in calling student and/or class service , try again later");
-		}
+		this.getStudent(vo.getStudentId());
+		this.getClass(vo.getClassId());
+		
+// 		CompletableFuture<ResponseEntity<StudentVo>> studentAsync = getStudentAsync(vo.getStudentId());
+// 		CompletableFuture<ResponseEntity<ClassVo>> classAsync = getClassAsync(vo.getClassId());
+// 		CompletableFuture.allOf(classAsync, studentAsync).join();
+//		 try {
+//			classAsync.get();
+//			studentAsync.get();
+//		 } catch (InterruptedException | ExecutionException e) {			
+//			 log.error("error in calling calss service and/or student service",e);
+//			 throw new ServiceNotAvaiableException("error in calling student and/or class service , try again later");
+//		}
 		
 		Enrollment enrollment = new Enrollment(id, vo.getClassId(), vo.getStudentId(), LocalDateTime.now());
 		enrollment = repo.save(enrollment);
@@ -191,8 +149,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
 			return CompletableFuture.completedFuture(clas);
 		} catch (NotFound e) {
+			log.error(e.getMessage(),e);
 			throw new ClassNotFoundException(id + " - class not found");
 		} catch (Exception ee) {
+			log.error(ee.getMessage(),ee);
 			throw new ServiceNotAvaiableException("class service not available, try again later ");
 		}
 	}
@@ -204,8 +164,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
 			return CompletableFuture.completedFuture(student);
 		} catch (NotFound e) {
-			throw new ClassNotFoundException(id + " - student not found");
+			log.error(e.getMessage(),e);
+			throw new StudentNotFoundException(id + " - student not found");
 		} catch (Exception ee) {
+			log.error(ee.getMessage(),ee);
 			throw new ServiceNotAvaiableException("student service not available, try again later ");
 		}
 	}
