@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -43,7 +42,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
 	@Autowired
 	private ClassServiceClient classServiceClient;
-	
+
 	@Override
 	public List<EnrollmentVo> getAllEnrollmentList() {
 
@@ -69,10 +68,10 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 		if (repo.findById(id).isPresent()) {
 			log.info(id + " - enrollment already exist");
 			throw new EnrollmentAlreadyExistException(id + " - enrollment already exist");
-		}		
-		this.getStudent(vo.getStudentId());
-		this.getClass(vo.getClassId());
-		
+		}
+		// this.getStudent(vo.getStudentId());
+		// this.getClass(vo.getClassId());
+
 // 		CompletableFuture<ResponseEntity<StudentVo>> studentAsync = getStudentAsync(vo.getStudentId());
 // 		CompletableFuture<ResponseEntity<ClassVo>> classAsync = getClassAsync(vo.getClassId());
 // 		CompletableFuture.allOf(classAsync, studentAsync).join();
@@ -83,7 +82,7 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 //			 log.error("error in calling calss service and/or student service",e);
 //			 throw new ServiceNotAvaiableException("error in calling student and/or class service , try again later");
 //		}
-		
+
 		Enrollment enrollment = new Enrollment(id, vo.getClassId(), vo.getStudentId(), LocalDateTime.now());
 		enrollment = repo.save(enrollment);
 		log.info("reponse entity:" + vo);
@@ -144,34 +143,21 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 
 	@Async("classServiceExecutor")
 	public CompletableFuture<ResponseEntity<ClassVo>> getClassAsync(String id) {
-		try {
-			ResponseEntity<ClassVo> clas = classServiceClient.getClass(id);
+		ResponseEntity<ClassVo> clas = classServiceClient.getClass(id);
 
-			return CompletableFuture.completedFuture(clas);
-		} catch (NotFound e) {
-			log.error(e.getMessage(),e);
-			throw new ClassNotFoundException(id + " - class not found");
-		} catch (Exception ee) {
-			log.error(ee.getMessage(),ee);
-			throw new ServiceNotAvaiableException("class service not available, try again later ");
-		}
+		return CompletableFuture.completedFuture(clas);
+
 	}
 
 	@Async("classServiceExecutor")
 	public CompletableFuture<ResponseEntity<StudentVo>> getStudentAsync(String id) {
-		try {
-			ResponseEntity<StudentVo> student = studentServiceClient.getStudent(id);
 
-			return CompletableFuture.completedFuture(student);
-		} catch (NotFound e) {
-			log.error(e.getMessage(),e);
-			throw new StudentNotFoundException(id + " - student not found");
-		} catch (Exception ee) {
-			log.error(ee.getMessage(),ee);
-			throw new ServiceNotAvaiableException("student service not available, try again later ");
-		}
+		ResponseEntity<StudentVo> student = studentServiceClient.getStudent(id);
+
+		return CompletableFuture.completedFuture(student);
+
 	}
-	
+
 	/*
 	 * private ResponseEntity<StudentVo> getStudentResttemplate(String id) { try {
 	 * log.info("calling student service");
@@ -183,7 +169,5 @@ public class EnrollmentServiceImpl implements EnrollmentService {
 	 * ServiceNotAvaiableException("student service not available, try again later"
 	 * ); } }
 	 */
-
-	
 
 }
