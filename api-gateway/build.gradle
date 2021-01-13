@@ -21,7 +21,11 @@ dependencies {
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
 	implementation 'org.springframework.cloud:spring-cloud-starter-netflix-zuul'
 	implementation 'org.springframework.cloud:spring-cloud-sleuth-zipkin'
-    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'	
+    implementation 'org.springframework.cloud:spring-cloud-starter-sleuth'
+    //implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+	//compile group: 'org.springframework.security.oauth', name: 'spring-security-oauth2', version: '2.3.6.RELEASE'	
+   // compile group: 'org.springframework.security', name: 'spring-security-jwt', version: '1.1.1.RELEASE'
+    //compile group: 'org.springframework.security.oauth.boot', name: 'spring-security-oauth2-autoconfigure', version: '2.3.6.RELEASE'	
 	testImplementation('org.springframework.boot:spring-boot-starter-test') {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
